@@ -5,12 +5,22 @@ const Dat = require('dat-node')
 const fs = require('fs')
 const jayson = require('jayson');
 const commandLineArgs = require('command-line-args')
-const opts = commandLineArgs({
+
+const opts = commandLineArgs([{
   name: 'port',
   alias: 'p',
   type: Number,
   defaultValue: 3002
-})
+}, {
+  name: 'cachedir',
+  alias: 'd',
+  type: String,
+  defaultValue: "./seeds"
+}])
+
+if (!fs.existsSync(opts.cachedir)){
+    fs.mkdirSync(opts.cachedir);
+}
 
 const Bonjour = require('bonjour')()
 
