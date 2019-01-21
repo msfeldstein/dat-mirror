@@ -1,0 +1,14 @@
+{
+  "name": "dat-mirror",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "bonjour": "^3.5.0",
+    "clear": "^0.1.0",
+    "command-line-args": "^5.0.2",
+    "dat-node": "^3.5.14",
+    "jayson": "^2.1.1",
+    "terminal-kit": "^1.26.10"
+  }
+}
