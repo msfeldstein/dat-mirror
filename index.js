@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var Bonjour = require('bonjour')()
 var jayson = require('jayson');
 
@@ -8,7 +10,7 @@ const mainDefinitions = [
 const mainOptions = commandLineArgs(mainDefinitions, { stopAtFirstUnknown: true })
 const dat = mainOptions.dat
 
-
+console.log("Searching for dat-mirror service...")
 const serviceLocator = Bonjour.find({
   type: 'dat'
 }, function (service) {

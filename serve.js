@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const term = require('terminal-kit').terminal
 const Dat = require('dat-node')
 const fs = require('fs')

@@ -2,6 +2,9 @@
   "name": "@msfeldstein/dat-mirror",
   "version": "1.0.0",
   "main": "index.js",
+  "bin": {
+    "dat-mirror": "./serve.js"
+  },
   "license": "MIT",
   "dependencies": {
     "bonjour": "^3.5.0",
