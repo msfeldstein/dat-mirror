@@ -1,5 +1,5 @@
 {
-  "name": "dat-mirror",
+  "name": "@msfeldstein/dat-mirror",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
