@@ -8,7 +8,7 @@ var program = require('commander')
 const homedir = require('os').homedir();
 
 program
-  .option('-p, --port [port]', 'Port to start on')
+  .option('-p, --port [port]', 'Port to start on', 3002)
   .option('-d, --cachedir [cachedir]', "Directory of dat cache", `${homedir}/dat-mirror-seeds`)
   .parse(process.argv)
 
