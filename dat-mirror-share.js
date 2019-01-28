@@ -1,14 +1,17 @@
 #!/usr/bin/env node
-
+var program = require('commander')
 var Bonjour = require('bonjour')()
 var jayson = require('jayson');
 
-const commandLineArgs = require('command-line-args')
-const mainDefinitions = [
-  { name: 'dat', defaultOption: true }
-]
-const mainOptions = commandLineArgs(mainDefinitions, { stopAtFirstUnknown: true })
-const dat = mainOptions.dat
+program
+  .version('1.0.0')
+  .usage('<dat>')
+  .action(function(dat) {
+    program.dat = dat
+  })
+  .parse(process.argv)
+
+const dat = program.dat
 
 console.log("Searching for dat-mirror service...")
 const serviceLocator = Bonjour.find({
@@ -17,7 +20,8 @@ const serviceLocator = Bonjour.find({
   const ip = service.addresses[0]
   const port = service.port
   var client = jayson.client.http({
-    port: port
+    port: port,
+    host: ip
   });
   client.request('mirror', [dat], function(err, resp) {
     if (err) {

@@ -4,22 +4,18 @@ const term = require('terminal-kit').terminal
 const Dat = require('dat-node')
 const fs = require('fs')
 const jayson = require('jayson');
-const commandLineArgs = require('command-line-args')
+var program = require('commander')
+const homedir = require('os').homedir();
 
-const opts = commandLineArgs([{
-  name: 'port',
-  alias: 'p',
-  type: Number,
-  defaultValue: 3002
-}, {
-  name: 'cachedir',
-  alias: 'd',
-  type: String,
-  defaultValue: "./seeds"
-}])
+program
+  .option('-p, --port [port]', 'Port to start on')
+  .option('-d, --cachedir [cachedir]', "Directory of dat cache", `${homedir}/dat-mirror-seeds`)
+  .parse(process.argv)
 
-if (!fs.existsSync(opts.cachedir)){
-    fs.mkdirSync(opts.cachedir);
+const cache = program.cachedir
+
+if (!fs.existsSync(cache)){
+    fs.mkdirSync(cache);
 }
 
 const Bonjour = require('bonjour')()
@@ -27,7 +23,7 @@ const Bonjour = require('bonjour')()
 Bonjour.publish({
   name: 'Dat Mirror',
   type: 'dat',
-  port: opts.port
+  port: program.port
 })
 
 const currentlyHosted = []
@@ -41,13 +37,13 @@ const updateDisplay = () => {
     }
     console.log(`${glyph} - ${seedInfo.address}`)
     if (seedInfo.error) {
-      console.log(` -- ${error}`)
+      console.log(` -- ${seedInfo.error}`)
     }
   })
 }
 
 
-const directories = fs.readdirSync('./seeds')
+const directories = fs.readdirSync(program.cachedir)
 console.log("Directories", directories)
 directories.forEach(dir => {
   currentlyHosted.push(seed(dir))
@@ -62,8 +58,8 @@ function seed(addr, callback) {
     error: null,
     accessedBy: []
   }
-  console.log("Seeding ", `./seeds/${addr}`)
-  Dat(`./seeds/${addr}`, {
+  console.log("Seeding ", `${cache}/${addr}`)
+  Dat(`${cache}/${addr}`, {
     key: addr
   }, function (err, dat) {
     if (err) {
@@ -90,4 +86,4 @@ var server = jayson.server({
   }
 });
 
-server.http().listen(opts.port);
+server.http().listen(program.port);
