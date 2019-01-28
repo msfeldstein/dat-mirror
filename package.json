@@ -3,7 +3,7 @@
   "version": "1.2.1",
   "main": "index.js",
   "bin": {
-    "dat-mirror": "./serve.js"
+    "dat-mirror": "./dat-mirror.js"
   },
   "license": "MIT",
   "dependencies": {
