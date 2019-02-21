@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 
-const term = require('terminal-kit').terminal
 const Dat = require('dat-node')
 const fs = require('fs')
-const jayson = require('jayson');
-var program = require('commander')
+const path = require('path')
+const program = require('commander')
 const homedir = require('os').homedir();
+const mirrorViaHttp = require('./dat-http-mirror')
+const express = require('express')
+const jsonParser = require('body-parser').json;
+
+const app = express()
 
 program
   .option('-p, --port [port]', 'Port to start on', 3002)
@@ -18,6 +22,7 @@ if (!fs.existsSync(cache)){
     fs.mkdirSync(cache);
 }
 
+
 const Bonjour = require('bonjour')()
 
 Bonjour.publish({
@@ -28,7 +33,6 @@ Bonjour.publish({
 
 const currentlyHosted = []
 const updateDisplay = () => {
-  term.clear()
   console.log("Currently Hosting:")
   currentlyHosted.forEach(seedInfo => {
     let glyph = seedInfo.active ? '👍' : '🙏'
@@ -44,11 +48,12 @@ const updateDisplay = () => {
 
 
 const directories = fs.readdirSync(program.cachedir)
-console.log("Directories", directories)
-directories.forEach(dir => {
-  currentlyHosted.push(seed(dir))
-})
-updateDisplay()
+// directories.forEach(dir => {
+//   if (fs.lstatSync(path.join(program.cachedir, dir)).isDirectory()) {
+//     currentlyHosted.push(seed(dir))  
+//   }
+// })
+// updateDisplay()
 
 function seed(addr, callback) {
   const seedingInfo = {
@@ -65,7 +70,9 @@ function seed(addr, callback) {
     if (err) {
       seedingInfo.error = err
       updateDisplay()
-      callback(err, false);
+      if (callback)
+        callback(err, false);
+      return
     }
     seedingInfo.active = true
     updateDisplay()
@@ -76,14 +83,14 @@ function seed(addr, callback) {
   return seedingInfo
 }
 
-// create a server
-var server = jayson.server({
-  mirror: function(args, callback) {
-    console.log(args)
-    const addr = args[0]
-    seed(addr, callback)
-    currentlyHosted.push(seed(addr, callback))
-  }
-});
+app.post('/_dat-mirror/share/:dat', (req, res) => {
+  console.log("Share ", req.params)
+  const addr = req.params.dat
+  currentlyHosted.push(seed(addr, () => res.sendStatus(200)))
+})
 
-server.http().listen(program.port);
+mirrorViaHttp(app, program.cachedir, express)
+app.get('/', (req, res) => {
+  res.send("app.get('/')")
+})
+app.listen(program.port, () => console.log("serving on port", program.port))

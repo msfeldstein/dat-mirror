@@ -5,14 +5,23 @@
   "bin": {
     "dat-mirror": "./dat-mirror.js"
   },
+  "scripts": {
+    "start-server": "./dat-mirror.js serve"
+  },
   "license": "MIT",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "bonjour": "^3.5.0",
     "clear": "^0.1.0",
     "command-line-args": "^5.0.2",
     "commander": "^2.19.0",
+    "dat-link-resolve": "^2.3.0",
     "dat-node": "^3.5.14",
+    "discovery-swarm": "^5.1.4",
+    "express": "^4.16.4",
+    "express-subdomain": "^1.0.5",
     "jayson": "^2.1.1",
+    "serve-index": "^1.9.1",
     "terminal-kit": "^1.26.10"
   }
 }
