@@ -21,7 +21,11 @@
     "express": "^4.16.4",
     "express-subdomain": "^1.0.5",
     "jayson": "^2.1.1",
+    "on-change": "^1.0.0",
     "serve-index": "^1.9.1",
     "terminal-kit": "^1.26.10"
+  },
+  "devDependencies": {
+    "eslint": "^5.14.1"
   }
 }

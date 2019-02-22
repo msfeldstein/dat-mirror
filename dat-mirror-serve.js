@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-const Dat = require('dat-node')
 const fs = require('fs')
 const path = require('path')
 const program = require('commander')
@@ -8,6 +7,7 @@ const homedir = require('os').homedir();
 const mirrorViaHttp = require('./dat-http-mirror')
 const express = require('express')
 const jsonParser = require('body-parser').json;
+const seed = require('./seed-dat')
 
 const app = express()
 
@@ -35,6 +35,7 @@ const currentlyHosted = []
 const updateDisplay = () => {
   console.log("Currently Hosting:")
   currentlyHosted.forEach(seedInfo => {
+    console.log(seedInfo)
     let glyph = seedInfo.active ? '👍' : '🙏'
     if (seedInfo.error) {
       glyph = '👎'
@@ -47,41 +48,19 @@ const updateDisplay = () => {
 }
 
 
-const directories = fs.readdirSync(program.cachedir)
-// directories.forEach(dir => {
-//   if (fs.lstatSync(path.join(program.cachedir, dir)).isDirectory()) {
-//     currentlyHosted.push(seed(dir))  
-//   }
-// })
-// updateDisplay()
-
-function seed(addr, callback) {
-  const seedingInfo = {
-    address: addr,
-    connected: [],
-    active: false,
-    error: null,
-    accessedBy: []
+const directories = fs.readdirSync(program.cachedir).map(d => `${program.cachedir}/${d}`)
+directories.forEach(async function(dir) {
+  if (fs.lstatSync(dir).isDirectory()) {
+    const datInfo = await seed(dir)
+    const httpInfo = await mirrorViaHttp(app, dir)
+    currentlyHosted.push({
+      dat: datInfo,
+      http: httpInfo
+    })
+    console.log("Dat", datInfo, "Http", httpInfo)
   }
-  console.log("Seeding ", `${cache}/${addr}`)
-  Dat(`${cache}/${addr}`, {
-    key: addr
-  }, function (err, dat) {
-    if (err) {
-      seedingInfo.error = err
-      updateDisplay()
-      if (callback)
-        callback(err, false);
-      return
-    }
-    seedingInfo.active = true
-    updateDisplay()
-    dat.joinNetwork()
-    if (callback)
-      callback(null, true);
-  })
-  return seedingInfo
-}
+})
+updateDisplay()
 
 app.post('/_dat-mirror/share/:dat', (req, res) => {
   console.log("Share ", req.params)
@@ -89,7 +68,6 @@ app.post('/_dat-mirror/share/:dat', (req, res) => {
   currentlyHosted.push(seed(addr, () => res.sendStatus(200)))
 })
 
-mirrorViaHttp(app, program.cachedir, express)
 app.get('/', (req, res) => {
   res.send("app.get('/')")
 })
