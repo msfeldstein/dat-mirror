@@ -1,3 +1,5 @@
+# Not ready for usage yet
+
 # dat-mirror
 
 `dat-mirror` is a service to persistently mirror your [dat](https://datproject.org/) p2p websites, intended to run on a permanently connected computer like a raspberry pi, so your sites stay available if you close your laptop.  It also serves your sites over an http mirror so anyone can see it, even on mobile.
