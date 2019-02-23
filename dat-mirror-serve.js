@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 
 const fs = require('fs')
+const neatLog = require('neat-log')
 const path = require('path')
 const program = require('commander')
 const homedir = require('os').homedir();
-const mirrorViaHttp = require('./dat-http-mirror')
+const mirrorViaHttp = require('./server/dat-http-mirror')
 const express = require('express')
 const jsonParser = require('body-parser').json;
-const seed = require('./seed-dat')
-
-const app = express()
+const seed = require('./server/seed-dat')
+const { siteList } = require('./server/components')
+const publish = require('./server/publish')
 
 program
   .option('-p, --port [port]', 'Port to start on', 3002)
@@ -17,50 +18,34 @@ program
   .parse(process.argv)
 
 const cache = program.cachedir
-
 if (!fs.existsSync(cache)){
     fs.mkdirSync(cache);
 }
 
-
-const Bonjour = require('bonjour')()
-
-Bonjour.publish({
-  name: 'Dat Mirror',
-  type: 'dat',
-  port: program.port
+const app = express()
+publish(program.port) // Advertise over discovery services
+const ui = neatLog(siteList, {
+  fullscreen: true
 })
+ui.use(serve)
 
-const currentlyHosted = []
-const updateDisplay = () => {
-  console.log("Currently Hosting:")
-  currentlyHosted.forEach(seedInfo => {
-    console.log(seedInfo)
-    let glyph = seedInfo.active ? '👍' : '🙏'
-    if (seedInfo.error) {
-      glyph = '👎'
-    }
-    console.log(`${glyph} - ${seedInfo.address}`)
-    if (seedInfo.error) {
-      console.log(` -- ${seedInfo.error}`)
+async function serve(state, bus) {
+  state.currentlyHosted = []
+  const directories = fs.readdirSync(cache).map(d => `${cache}/${d}`)
+  directories.forEach(async function(dir) {
+    if (fs.lstatSync(dir).isDirectory()) {
+      const datInfo = await seed(dir)
+      const httpInfo = await mirrorViaHttp(app, dir)
+      state.currentlyHosted.push({
+        datKey: datInfo.address,
+        dat: datInfo,
+        http: httpInfo
+      })
+      bus.emit('render')
     }
   })
+  bus.emit('render')
 }
-
-
-const directories = fs.readdirSync(program.cachedir).map(d => `${program.cachedir}/${d}`)
-directories.forEach(async function(dir) {
-  if (fs.lstatSync(dir).isDirectory()) {
-    const datInfo = await seed(dir)
-    const httpInfo = await mirrorViaHttp(app, dir)
-    currentlyHosted.push({
-      dat: datInfo,
-      http: httpInfo
-    })
-    console.log("Dat", datInfo, "Http", httpInfo)
-  }
-})
-updateDisplay()
 
 app.post('/_dat-mirror/share/:dat', (req, res) => {
   console.log("Share ", req.params)
