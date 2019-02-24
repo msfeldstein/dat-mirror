@@ -9,7 +9,7 @@ const mirrorViaHttp = require('./server/dat-http-mirror')
 const express = require('express')
 const jsonParser = require('body-parser').json;
 const seed = require('./server/seed-dat')
-const { siteList } = require('./server/components')
+const { view } = require('./server/components')
 const publish = require('./server/publish')
 
 program
@@ -24,18 +24,20 @@ if (!fs.existsSync(cache)){
 
 const app = express()
 publish(program.port) // Advertise over discovery services
-const ui = neatLog(siteList, {
+const ui = neatLog(view, {
   fullscreen: true
 })
 ui.use(serve)
 
 async function serve(state, bus) {
   state.currentlyHosted = []
+  state.httpPort = program.port
   const directories = fs.readdirSync(cache).map(d => `${cache}/${d}`)
   directories.forEach(async function(dir) {
     if (fs.lstatSync(dir).isDirectory()) {
       const datInfo = await seed(dir)
       const httpInfo = await mirrorViaHttp(app, dir)
+      datInfo.on('change', () => bus.emit('render'))
       state.currentlyHosted.push({
         datKey: datInfo.address,
         dat: datInfo,
@@ -56,4 +58,4 @@ app.post('/_dat-mirror/share/:dat', (req, res) => {
 app.get('/', (req, res) => {
   res.send("app.get('/')")
 })
-app.listen(program.port, () => console.log("serving on port", program.port))
+app.listen(program.port)
