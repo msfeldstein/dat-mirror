@@ -1,8 +1,13 @@
 #!/usr/bin/env node
 var program = require('commander')
-var Bonjour = require('bonjour')()
-var resolve = require('dat-link-resolve')
 var http = require('http')
+var discovery = require('discovery-swarm')
+var hypercore = require('hypercore')
+var multifeed = require('multifeed')
+var pump = require('pump')
+var getConfig = require('./client/config')
+const homedir = require('os').homedir()
+const path = require('path')
 
 program
   .version('1.0.0')
@@ -12,31 +17,35 @@ program
   })
   .parse(process.argv)
 
-const dat = program.dat
+async function run() {
+  const config = await getConfig()
 
-if (dat.length != 64) {
-  throw "Need a 64 char dat address"
+  const dat = program.dat
+
+  if (dat.length != 64) {
+    throw "Need a 64 char dat address"
+  }
+
+  var multi = multifeed(hypercore, path.join(homedir, 'dat-mirror-client.db'), {
+    valueEncoding: 'json'
+  })
+
+  var swarm = discovery()
+  console.log("Create discovery")
+
+  multi.writer('local', (err, feed) => {
+    console.log("Writer feed ready, joining", config.mirrorKey)
+    swarm.join(config.mirrorKey)
+    swarm.on('connection', function (connection) {
+      console.log('Found remote peer')
+      pump(connection, multi.replicate({ live: true }), connection)
+    })
+    console.log("Appending")
+    feed.append({
+      type: 'add-mirror',
+      datKey: dat
+    })
+  })
+
 }
-
-console.log("Searching for dat-mirror service...")
-const serviceLocator = Bonjour.find({
-  type: 'dat'
-}, function (service) {
-  const ip = service.addresses[0]
-  const port = service.port
-  console.log("posting to ", `/_dat-mirror/share/${dat}`)
-  const req = http.request({
-    host: ip,
-    port,
-    path: `/_dat-mirror/share/${dat}`,
-    method: 'POST'
-  }, (res) => {
-    console.log("Successfully requested Mirror")
-    process.exit();
-  })
-  req.on('error', (err) => {
-    throw err
-  })
-  req.end()
-  console.log("Found dat service ", ip, "port", port)
-})
+run()

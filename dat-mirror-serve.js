@@ -7,10 +7,10 @@ const program = require('commander')
 const homedir = require('os').homedir();
 const mirrorViaHttp = require('./server/dat-http-mirror')
 const express = require('express')
-const jsonParser = require('body-parser').json;
 const seed = require('./server/seed-dat')
 const { view } = require('./server/components')
-const publish = require('./server/publish')
+const connect = require('./server/connect')
+const config = require('./server/config')()
 
 program
   .option('-p, --port [port]', 'Port to start on', 3002)
@@ -23,7 +23,7 @@ if (!fs.existsSync(cache)){
 }
 
 const app = express()
-publish(program.port) // Advertise over discovery services
+
 const ui = neatLog(view, {
   fullscreen: true
 })
@@ -31,29 +31,24 @@ ui.use(serve)
 
 async function serve(state, bus) {
   state.currentlyHosted = []
+  state.mirrorKey = config.mirrorKey
   state.httpPort = program.port
-  const directories = fs.readdirSync(cache).map(d => `${cache}/${d}`)
-  directories.forEach(async function(dir) {
-    if (fs.lstatSync(dir).isDirectory()) {
-      const datInfo = await seed(dir)
-      const httpInfo = await mirrorViaHttp(app, dir)
-      datInfo.on('change', () => bus.emit('render'))
-      state.currentlyHosted.push({
-        datKey: datInfo.address,
-        dat: datInfo,
-        http: httpInfo
-      })
-      bus.emit('render')
-    }
+
+  const connection = connect(config.mirrorKey)
+  connection.on("mirror", async (opts) => {
+    const dir = path.join(cache, opts.datKey)
+    const datInfo = await seed(dir)
+    const httpInfo = await mirrorViaHttp(app, dir)
+    datInfo.on('change', () => bus.emit('render'))
+    state.currentlyHosted.push({
+      datKey: datInfo.address,
+      dat: datInfo,
+      http: httpInfo
+    })
+    bus.emit('render')
   })
   bus.emit('render')
 }
-
-app.post('/_dat-mirror/share/:dat', (req, res) => {
-  console.log("Share ", req.params)
-  const addr = req.params.dat
-  currentlyHosted.push(seed(addr, () => res.sendStatus(200)))
-})
 
 app.get('/', (req, res) => {
   res.send("app.get('/')")

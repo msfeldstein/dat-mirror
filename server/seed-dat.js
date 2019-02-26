@@ -16,15 +16,11 @@ class DatInfo extends EventEmitter {
 
 module.exports = async function seed(dir) {
   const addr = path.basename(dir)
-
   const seedingInfo = new DatInfo(addr)
-  
-  
   try {
     const dat = Dat(dir, {
       key: addr
     }, function(err, dat) {
-
       seedingInfo.active = true
       seedingInfo.emit('change')
       dat.joinNetwork()

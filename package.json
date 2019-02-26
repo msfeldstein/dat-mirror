@@ -22,8 +22,10 @@
     "express-subdomain": "^1.0.5",
     "fixed-width-string": "^1.0.0",
     "jayson": "^2.1.1",
+    "multifeed": "^2.0.7",
     "neat-log": "^3.1.0",
     "on-change": "^1.0.0",
+    "pump": "^3.0.0",
     "serve-index": "^1.9.1",
     "terminal-kit": "^1.26.10",
     "txt-blit": "^1.0.0"
