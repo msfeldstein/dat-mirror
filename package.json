@@ -1,6 +1,6 @@
 {
-  "name": "@msfeldstein/dat-mirror",
-  "version": "1.4.0",
+  "name": "dat-mirror",
+  "version": "1.0.0",
   "main": "index.js",
   "bin": {
     "dat-mirror": "./dat-mirror.js"
