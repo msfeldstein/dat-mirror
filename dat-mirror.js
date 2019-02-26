@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 var program = require('commander')
-var Bonjour = require('bonjour')()
-var jayson = require('jayson');
 
 program
   .version('1.0.0')

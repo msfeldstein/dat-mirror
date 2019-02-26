@@ -1,6 +1,5 @@
 const path = require('path')
 var Dat = require('dat-node')
-Dat = require('util').promisify(Dat)
 const EventEmitter = require('events')
 
 class DatInfo extends EventEmitter {
@@ -18,7 +17,7 @@ module.exports = async function seed(dir) {
   const addr = path.basename(dir)
   const seedingInfo = new DatInfo(addr)
   try {
-    const dat = Dat(dir, {
+    Dat(dir, {
       key: addr
     }, function(err, dat) {
       seedingInfo.active = true
@@ -30,7 +29,6 @@ module.exports = async function seed(dir) {
         seedingInfo.emit('change')
       })
     })
-    
   } catch (err) {
     seedingInfo.error = err
   }

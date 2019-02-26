@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 var program = require('commander')
-var http = require('http')
 var discovery = require('discovery-swarm')
 var hypercore = require('hypercore')
 var multifeed = require('multifeed')

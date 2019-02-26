@@ -1,12 +1,11 @@
 const homedir = require('os').homedir()
 const path = require('path')
 const fs = require('fs')
-const crypto = require('crypto')
-const readline = require('readline');
+const readline = require('readline')
 const chalk = require('chalk')
 
 async function readStdin(prompt) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout

@@ -33,21 +33,22 @@ async function serve(state, bus) {
   state.currentlyHosted = []
   state.mirrorKey = config.mirrorKey
   state.httpPort = program.port
+  const change = () => bus.emit('render')
 
   const connection = connect(config.mirrorKey)
   connection.on("mirror", async (opts) => {
     const dir = path.join(cache, opts.datKey)
     const datInfo = await seed(dir)
     const httpInfo = await mirrorViaHttp(app, dir)
-    datInfo.on('change', () => bus.emit('render'))
+    datInfo.on('change', change)
     state.currentlyHosted.push({
       datKey: datInfo.address,
       dat: datInfo,
       http: httpInfo
     })
-    bus.emit('render')
+    change()
   })
-  bus.emit('render')
+  change()
 }
 
 app.get('/', (req, res) => {
