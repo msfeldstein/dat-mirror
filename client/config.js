@@ -4,6 +4,8 @@ const fs = require('fs')
 const readline = require('readline')
 const chalk = require('chalk')
 
+const configPath = path.join(homedir, 'dat-mirror-client-config.json')
+
 async function readStdin(prompt) {
   return new Promise((resolve) => {
     const rl = readline.createInterface({
@@ -17,8 +19,16 @@ async function readStdin(prompt) {
   })
 }
 
-module.exports = async function() {
-  const configPath = path.join(homedir, 'dat-mirror-client-config.json')
+function rekey() {
+  try {
+    fs.unlinkSync(configPath)  
+  } catch (err) {}
+}
+
+module.exports = async function(force) {
+  if (force) {
+    rekey()
+  }
   let config = null
   try {
     config = JSON.parse(fs.readFileSync(configPath).toString())

@@ -51,7 +51,4 @@ async function serve(state, bus) {
   change()
 }
 
-app.get('/', (req, res) => {
-  res.send("app.get('/')")
-})
 app.listen(program.port)
