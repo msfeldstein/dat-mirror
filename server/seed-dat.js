@@ -9,6 +9,7 @@ class DatInfo extends EventEmitter {
     this.connected = 0
     this.active = false
     this.error = null
+    this.syncPercent = 0
     this.accessedBy = []
   }
 }
@@ -25,6 +26,8 @@ module.exports = async function seed(dir) {
       dat.joinNetwork()
       dat.trackStats()
       dat.stats.on('update', () => {
+        const stats = dat.stats.get()
+        seedingInfo.syncPercent = stats.length / stats.downloaded
         seedingInfo.connected = dat.stats.peers.total
         seedingInfo.emit('change')
       })

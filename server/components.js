@@ -22,6 +22,7 @@ function siteEntry(site) {
   return output(`
       ${chalk.green(datURL)}
       http://${httpPrefix}yourdomain.com/${httpSuffix}
+      Sync: ${Math.ceil(site.dat.syncPercent * 100)}%
     `)
 }
 
