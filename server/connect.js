@@ -24,7 +24,7 @@ module.exports = function(key) {
     const feeds = multi.feeds()
     // Keep track of which dats we've already emitted to dedupe
     const datsMirrored = {}
-    feeds.forEach(feed => {
+    const listenToFeed = feed => {
       feed.createReadStream({live: true})
       .on('data', data => {
         if (data.type == constants.ADD_MIRROR && !datsMirrored[data.datKey]) {
@@ -41,7 +41,10 @@ module.exports = function(key) {
           })
         }
       })
-    })
+    }
+    feeds.forEach(listenToFeed)
+    multi.on('feed', listenToFeed)
+
   })
   
   return ee
