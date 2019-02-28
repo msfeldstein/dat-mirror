@@ -46,19 +46,20 @@ async function run() {
       })
     })
     multi.writer('local', (err, feed) => {
+      const msg = {
+        type: constants.ADD_MIRROR,
+        datKey: dat
+      }
+      if (program.subdomain) {
+        msg.subdomain = program.subdomain
+      }
+      feed.append(msg)
+      console.log(`Added ${chalk.green(dat)} to hyperlog, run dat-mirror sync if the share command doesn't finish successfully`)
+
       swarm.join(config.mirrorKey)
       swarm.on('connection', function (connection) {
         console.log('Connected to peer, syncing...')
-        const msg = {
-          type: constants.ADD_MIRROR,
-          datKey: dat
-        }
-        if (program.subdomain) {
-          msg.subdomain = program.subdomain
-        }
-        feed.append(msg)
-        pump(connection, multi.replicate({ live: true }), connection)
-        console.log(`Added ${chalk.green(dat)} to hyperlog, run dat-mirror sync if the share command doesn't finish successfully`)
+        pump(connection, multi.replicate({ live: true }), connection)  
       })
     })
        
