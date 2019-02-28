@@ -1,11 +1,10 @@
 const discovery = require('discovery-swarm')
 const multifeed = require('multifeed')
 const hypercore = require('hypercore')
-const homedir = require('os').homedir()
-const path = require('path')
 const pump = require('pump')
 const EventEmitter = require('events')
 const constants = require('../constants')
+const dataFilePath = require('../data-file-path')
 
 // Connects to a hypercore multifeed and emits 'mirror' events for any
 // existing dat mirrors, or new ones as they appear
@@ -13,7 +12,7 @@ module.exports = function(key) {
   const ee = new EventEmitter()
   const swarm = discovery()
 
-  var multi = multifeed(hypercore, path.join(homedir, 'dat-mirror-db'), {
+  var multi = multifeed(hypercore, dataFilePath('dat-mirror-db'), {
     valueEncoding: 'json'
   })
 

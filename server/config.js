@@ -1,10 +1,9 @@
-const homedir = require('os').homedir()
-const path = require('path')
 const fs = require('fs')
 const crypto = require('crypto')
+const dataFilePath = require('../data-file-path')
 
 module.exports = function() {
-  const configPath = path.join(homedir, 'dat-mirror-config.json')
+  const configPath = dataFilePath('dat-mirror-config.json')
   let config = null
   try {
     config = JSON.parse(fs.readFileSync(configPath).toString())

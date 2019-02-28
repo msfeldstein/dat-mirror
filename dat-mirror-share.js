@@ -5,10 +5,9 @@ var hypercore = require('hypercore')
 var multifeed = require('multifeed')
 var pump = require('pump')
 var getConfig = require('./client/config')
-const homedir = require('os').homedir()
-const path = require('path')
 const chalk = require('chalk')
 const constants = require('./constants')
+const dataFile = require('./data-file-path')
 
 program
   .version('1.0.0')
@@ -27,7 +26,7 @@ async function run() {
     throw "Need a 64 char dat address"
   }
 
-  var multi = multifeed(hypercore, path.join(homedir, 'dat-mirror-client.db'), {
+  var multi = multifeed(hypercore, dataFile('dat-mirror-client.db'), {
     valueEncoding: 'json'
   })
 

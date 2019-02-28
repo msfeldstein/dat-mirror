@@ -4,17 +4,17 @@ const fs = require('fs')
 const neatLog = require('neat-log')
 const path = require('path')
 const program = require('commander')
-const homedir = require('os').homedir();
 const mirrorViaHttp = require('./server/dat-http-mirror')
 const express = require('express')
 const seed = require('./server/seed-dat')
 const { view } = require('./server/components')
 const connect = require('./server/connect')
 const config = require('./server/config')()
+const dataFile = require('./data-file-path')
 
 program
   .option('-p, --port [port]', 'Port to start on', 3002)
-  .option('-d, --cachedir [cachedir]', "Directory of dat cache", `${homedir}/dat-mirror-seeds`)
+  .option('-d, --cachedir [cachedir]', "Directory of dat cache", dataFile('dat-mirror-seeds'))
   .parse(process.argv)
 
 const cache = program.cachedir

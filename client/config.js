@@ -1,10 +1,9 @@
-const homedir = require('os').homedir()
-const path = require('path')
 const fs = require('fs')
 const readline = require('readline')
 const chalk = require('chalk')
+const dataFilePath = require('../data-file-path')
 
-const configPath = path.join(homedir, 'dat-mirror-client-config.json')
+const configPath = dataFilePath('dat-mirror-client-config.json')
 
 async function readStdin(prompt) {
   return new Promise((resolve) => {
