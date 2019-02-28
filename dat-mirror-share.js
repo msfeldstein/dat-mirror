@@ -35,7 +35,7 @@ async function run() {
   console.log("Share ", chalk.green(dat), "to dat-mirror server", chalk.blue(config.mirrorKey))
   
   multi.ready(feeds => {
-    multi.feeds().forEach(feed => {
+    const listenToFeed = feed => {
       feed.createReadStream({live: true})
       .on('data', data => {
         if (data.type == constants.CONFIRM_MIRROR && 
@@ -44,7 +44,9 @@ async function run() {
           process.exit()
         }
       })
-    })
+    }
+    multi.feeds().forEach(listenToFeed)
+    multi.on('feed', listenToFeed)
     multi.writer('local', (err, feed) => {
       const msg = {
         type: constants.ADD_MIRROR,
