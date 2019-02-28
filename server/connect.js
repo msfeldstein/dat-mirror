@@ -29,13 +29,15 @@ module.exports = function(key) {
       .on('data', data => {
         if (data.type == constants.ADD_MIRROR && !datsMirrored[data.datKey]) {
           ee.emit("mirror", {
-            datKey: data.datKey
+            datKey: data.datKey,
+            subdomain: data.subdomain
           })
           datsMirrored[data.datKey] = true
           // Send confirmation to clients
           serverFeed.append({
             type: constants.CONFIRM_MIRROR,
-            datKey: data.datKey
+            datKey: data.datKey,
+            subdomain: data.subdomain
           })
         }
       })

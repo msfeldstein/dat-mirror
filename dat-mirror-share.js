@@ -12,6 +12,7 @@ const dataFile = require('./data-file-path')
 program
   .version('1.0.0')
   .usage('<dat>')
+  .option('--subdomain <subdomain>', 'Subdomain for http mirroring')
   .action(function(dat) {
     program.dat = dat
   })
@@ -49,11 +50,15 @@ async function run() {
       swarm.on('connection', function (connection) {
         console.log('Connected to peer, syncing...')
         pump(connection, multi.replicate({ live: true }), connection)
-        console.log(`Added ${chalk.green(dat)} to hyperlog, run dat-mirror sync if the share command doesn't finish successfully`)
-        feed.append({
+        const msg = {
           type: constants.ADD_MIRROR,
           datKey: dat
-        }) 
+        }
+        if (program.subdomain) {
+          msg.subdomain = program.subdomain
+        }
+        feed.append(msg)
+        console.log(`Added ${chalk.green(dat)} to hyperlog, run dat-mirror sync if the share command doesn't finish successfully`)
       })
     })
        
