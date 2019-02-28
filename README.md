@@ -1,6 +1,6 @@
 # dat-mirror
 
-`dat-mirror` is a service to persistently mirror your [dat](https://datproject.org/) p2p websites, intended to run on a permanently connected computer like a raspberry pi, so your sites stay available if you close your laptop.  It also serves your sites over an http mirror so anyone can see it, even on mobile.
+`dat-mirror` is a service to persistently mirror your [dat](https://datproject.org/) p2p websites, intended to run on a permanently connected computer like a raspberry pi, so your sites stay available if you close your laptop, or if you just want to seed someone elses site.  It also serves your sites over an http mirror so anyone can see it, even on mobile.
 
 This library uses the [discovery-swarm](https://github.com/mafintosh/discovery-swarm) p2p discovery package to make connecting to your service from anywhere easy, avoiding any port forwarding or any reliance on a third party server.
 
