@@ -23,8 +23,6 @@ $ dat-mirror share <dat-key>
 ```
 Now your dat will be hosted by your server, and kept up to date as your site changes.
 
-You can pass a `--subdomain` flag to `dat-mirror share` to host this dat at subdomain.yourserver.tld instead of yourserver.tld/\<dat-key\>
-
 ## Todo
 
 - Make client a background daemon so if the server isn't currently available it will eventually connect and mirror.  In the meantime add a dat-mirror sync call
