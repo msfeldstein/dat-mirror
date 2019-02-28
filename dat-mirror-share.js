@@ -49,7 +49,6 @@ async function run() {
       swarm.join(config.mirrorKey)
       swarm.on('connection', function (connection) {
         console.log('Connected to peer, syncing...')
-        pump(connection, multi.replicate({ live: true }), connection)
         const msg = {
           type: constants.ADD_MIRROR,
           datKey: dat
@@ -58,6 +57,7 @@ async function run() {
           msg.subdomain = program.subdomain
         }
         feed.append(msg)
+        pump(connection, multi.replicate({ live: true }), connection)
         console.log(`Added ${chalk.green(dat)} to hyperlog, run dat-mirror sync if the share command doesn't finish successfully`)
       })
     })

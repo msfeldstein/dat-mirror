@@ -27,7 +27,7 @@ module.exports = async function seed(dir) {
       dat.trackStats()
       dat.stats.on('update', () => {
         const stats = dat.stats.get()
-        seedingInfo.syncPercent = stats.length / stats.downloaded
+        seedingInfo.syncPercent = stats.downloaded / stats.length
         seedingInfo.connected = dat.stats.peers.total
         seedingInfo.emit('change')
       })
