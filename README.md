@@ -30,4 +30,3 @@ You can pass a `--subdomain` flag to `dat-mirror share` to host this dat at subd
 - Make client a background daemon so if the server isn't currently available it will eventually connect and mirror.  In the meantime add a dat-mirror sync call
 - Convert terminal gui into a web frontend, currently if you systemd start the server you can never see the status
 - Add ability to set a subdomain from `dat-mirror share`
-- Add a `dat-mirror config` call in case you want to change the mirror-key
