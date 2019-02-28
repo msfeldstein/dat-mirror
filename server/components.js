@@ -22,7 +22,6 @@ function siteEntry(site) {
   return output(`
       ${chalk.green(datURL)}
       http://${httpPrefix}yourdomain.com/${httpSuffix}
-      ${site.dat.connected} peers
     `)
 }
 
