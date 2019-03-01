@@ -30,7 +30,8 @@ module.exports = function(key) {
         if (data.type == constants.ADD_MIRROR && !datsMirrored[data.datKey]) {
           ee.emit("mirror", {
             datKey: data.datKey,
-            subdomain: data.subdomain
+            subdomain: data.subdomain,
+            wait: data.wait
           })
           datsMirrored[data.datKey] = true
           // Send confirmation to clients
@@ -44,6 +45,14 @@ module.exports = function(key) {
     }
     feeds.forEach(listenToFeed)
     multi.on('feed', listenToFeed)
+
+    ee.on('syncState', state => {
+      serverFeed.append({
+        type: constants.SYNC_PROGRESS,
+        datKey: state.datKey,
+        percent: state.percent
+      })
+    })
 
   })
   

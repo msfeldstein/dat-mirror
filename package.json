@@ -12,6 +12,7 @@
   "repository": "github:msfeldstein/dat-mirror",
   "license": "MIT",
   "dependencies": {
+    "ascii-progress": "^1.0.5",
     "chalk": "^2.4.2",
     "commander": "^2.19.0",
     "dat-node": "^3.5.14",

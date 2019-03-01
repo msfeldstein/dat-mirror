@@ -40,7 +40,13 @@ async function serve(state, bus) {
     const dir = path.join(cache, opts.datKey)
     const datInfo = await seed(dir)
     const httpInfo = await mirrorViaHttp(app, dir, opts)
-    datInfo.on('change', change)
+    datInfo.on('change', function() {
+      change()
+      connection.emit('syncState', {
+        datKey: datInfo.address,
+        percent: datInfo.syncPercent
+      })
+    })
     state.currentlyHosted.push({
       datKey: datInfo.address,
       dat: datInfo,
