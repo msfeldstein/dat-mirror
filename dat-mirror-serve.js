@@ -11,7 +11,7 @@ const { view } = require('./server/components')
 const connect = require('./server/connect')
 const config = require('./server/config')()
 const dataFile = require('./data-file-path')
-
+const { throttle } = require('throttle-debounce')
 program
   .option('-p, --port [port]', 'Port to start on', 3002)
   .option('-d, --cachedir [cachedir]', "Directory of dat cache", dataFile('dat-mirror-seeds'))
@@ -40,12 +40,15 @@ async function serve(state, bus) {
     const dir = path.join(cache, opts.datKey)
     const datInfo = await seed(dir)
     const httpInfo = await mirrorViaHttp(app, dir, opts)
-    datInfo.on('change', function() {
-      change()
+    const emitSyncState = throttle(500, () => {
       connection.emit('syncState', {
         datKey: datInfo.address,
         percent: datInfo.syncPercent
       })
+    })
+    datInfo.on('change', function() {
+      change()
+      emitSyncState()
     })
     state.currentlyHosted.push({
       datKey: datInfo.address,

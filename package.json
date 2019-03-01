@@ -25,7 +25,8 @@
     "multifeed": "^2.0.7",
     "neat-log": "^3.1.0",
     "pump": "^3.0.0",
-    "serve-index": "^1.9.1"
+    "serve-index": "^1.9.1",
+    "throttle-debounce": "^2.1.0"
   },
   "devDependencies": {
     "eslint": "^5.14.1"
