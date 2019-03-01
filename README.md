@@ -23,6 +23,8 @@ $ dat-mirror share <dat-key>
 ```
 Now your dat will be hosted by your server, and kept up to date as your site changes.
 
+If you want to ensure the entire dat has synced before you close your laptop, pass the `--wait` flag to watch the sync state.
+
 ## Todo
 
 - Make client a background daemon so if the server isn't currently available it will eventually connect and mirror.  In the meantime add a dat-mirror sync call
