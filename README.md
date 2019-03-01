@@ -27,4 +27,3 @@ Now your dat will be hosted by your server, and kept up to date as your site cha
 
 - Make client a background daemon so if the server isn't currently available it will eventually connect and mirror.  In the meantime add a dat-mirror sync call
 - Convert terminal gui into a web frontend, currently if you systemd start the server you can never see the status
-- Show sync status on server to tell when its safely downloaded
