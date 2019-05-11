@@ -1,12 +1,14 @@
-const fs = require('fs').promises
+const fs = require('fs')
+const { promisify } = require('util')
 const path = require('path')
 const express = require('express')
 const routeSubdomain = require('express-subdomain')
 const serveIndex = require('serve-index')
+const lstat = promisify(fs.lstat)
 
 module.exports = async function mirrorViaHttp(expressApp, dir, opts) {
   const fullpath = dir
-  const stat = await fs.lstat(fullpath)
+  const stat = await lstat(fullpath)
   const subdomain = opts.subdomain
   if (stat.isDirectory()) {
     const info = {
