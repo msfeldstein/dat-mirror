@@ -8,6 +8,7 @@ const lstat = promisify(fs.lstat)
 
 module.exports = async function mirrorViaHttp(expressApp, dir, opts) {
   const fullpath = dir
+  const key = dir.split('/').pop()
   const stat = await lstat(fullpath)
   const subdomain = opts.subdomain
   if (stat.isDirectory()) {
@@ -21,7 +22,7 @@ module.exports = async function mirrorViaHttp(expressApp, dir, opts) {
       expressApp.use(routeSubdomain(subdomain, router))
       // Do nothing, just means there's no config available
     }
-    expressApp.use('/' + dir, express.static(fullpath), serveIndex(fullpath, {icons: true}))
+    expressApp.use('/' + key, express.static(fullpath), serveIndex(fullpath, {icons: true}))
     return info
   }
   return {
